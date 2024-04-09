@@ -21,6 +21,10 @@ app.get('/', (_, response) => {
 
 // GET /api/todos
 
+app.get('/api/todos', (request,response) => {
+	
+})
+
 // POST /api/todos
 
 // PUT /api/todos/:id
