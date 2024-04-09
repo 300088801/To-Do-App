@@ -2,7 +2,7 @@
 const express = require('express')
 const app = express()
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3005
 
 app.use(express.json())
 app.use(express.static('public'))
@@ -22,13 +22,21 @@ app.get('/', (_, response) => {
 // GET /api/todos
 
 app.get('/api/todos', (request,response) => {
-	
+	response.json(todos)
 })
 
 // POST /api/todos
-
+app.post('/api/todos', (request,response) => {
+	const { item } = request.body
+	const id = todos.length + 1;
+	const complete = false;
+	todos.push ({ id, item, complete})
+	response.json({ id })
+})
 // PUT /api/todos/:id
+app.put('/api/todos/:id', (request,response) => {
 
+})
 
 
 const message = `Server running: http://localhost:${port}`
