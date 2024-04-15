@@ -1,6 +1,7 @@
 
 const express = require('express')
 const app = express()
+const { getCollection, ObjectId} = require('./ToDo-db')
 
 const port = process.env.PORT || 3005
 
@@ -21,7 +22,10 @@ app.get('/', (_, response) => {
 
 // GET /api/todos
 
-app.get('/api/todos', (request,response) => {
+app.get('/api/todos', async (request,response) => {
+	const collection = await getCollection('todo-api', 'todos')
+	const todos =  await collection.find().toArray()
+	console.log(todos)
 	response.json(todos)
 })
 
