@@ -1,7 +1,7 @@
 
 const express = require('express')
 const app = express()
-const { getCollection, ObjectId} = require('./ToDo-db')
+const { getConnection, ObjectId} = require('./ToDo-db')
 
 const port = process.env.PORT || 3005
 
@@ -11,8 +11,7 @@ app.use(express.static('public'))
 const todos = [
 	{ id: 1, item: 'Learn JavaScript', complete: false },
 	{ id: 2, item: 'Learn Express', complete: false },
-	{ id: 3, item: 'Build a To Do App', complete: false }
-]
+	{ id: 3, item: 'Build a To Do App', complete: false }]
 
 app.get('/', (_, response) => {
 	response.sendFile('index.html', { root })
@@ -23,30 +22,36 @@ app.get('/', (_, response) => {
 // GET /api/todos
 
 app.get('/api/todos', async (request,response) => {
-	const collection = await getCollection('todo-api', 'todos')
+	const collection = await getConnection('todo-api', 'todos')
 	const todos =  await collection.find().toArray()
 	console.log(todos)
 	response.json(todos)
 })
 
 // POST /api/todos
-app.post('/api/todos', (request,response) => {
-	console.log(request)
+app.post('/api/todos', async (request,response) => {
 	const { item } = request.body
-	const id = todos.length + 1;
 	const complete = false;
-	todos.push ({ id, item, complete})
-	response.json({ id })
+	const newToDo = { complete, item}
+	const collection = await getConnection('todo-api', 'todos')
+	await collection.insertOne(newToDo)
+	console.log(request)
+	response.json({ message : "New Todo Added!" })
 })
 
 
 // PUT /api/todos/:id
-app.put('/api/todos/:id', (request,response,) => {
+app.put('/api/todos/:id', async (request,response,) => {
 	
-	const { id } = request.params
-	const task = todos.find(todo => todo.id.toString() === id)
-	task.complete = !task.complete 
-	response.json({ id , complete: task.complete})
+	const { body, params } = request
+	const { id } = params
+
+	const collection = await getConnection('todo-api', 'todos')
+	const todo = await collection.findOne({ _id: new ObjectId(id) })
+	const complete = !todo.complete
+	const result = await collection.updateOne({ _id: new ObjectId(id) }, { $set: { complete } })
+
+	response.json(result)
 
 })
 
