@@ -13,7 +13,7 @@ POST http://localhost:{{port}}/api/todos
 Content-Type: application/json
 
 {
-  "item": "Finish the Assignment"
+  "item": "Finish the Final Exam"
 }
 
 ### Toggle completed status of a todo
